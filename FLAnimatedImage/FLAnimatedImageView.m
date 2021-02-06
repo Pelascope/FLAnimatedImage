@@ -107,7 +107,16 @@
                 // However, when calling `setImage:nil`, this `contentsTransoforms` will not be reset to identity.
                 // Further animation frame will be rendered as rotated. So we must set it to the poster image to clear the previous state.
                 // See more here: https://github.com/Flipboard/FLAnimatedImage/issues/100
-                super.image = animatedImage.posterImage;
+                
+                // [modification, https://github.com/Pelascope/FLAnimatedImage]
+                // When the UIImageView has a width less than 100 pts, render the image as a template to allow recoloring.
+                // We make use of small-sized (bounds well under 100x100) animations that need to match the light/dark themes.
+                if (self.bounds.size.width < 100) {
+                    super.image = [animatedImage.posterImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+                } else { 
+                    super.image = animatedImage.posterImage;
+                }
+
                 // Clear out the image.
                 super.image = nil;
             }
